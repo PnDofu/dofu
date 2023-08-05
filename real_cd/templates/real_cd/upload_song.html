@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<body>
+	<form method="post" enctype="multipart/form-data">
+		{% csrf_token %}
+		<label for="name">Name:</label>
+		<input type="text" id="name" name="name"><br>
+		<label for="audio_file">Audio_file:</label>
+		<input type="file" id="audio_file" name="audio_file"><br>
+		<label for="lyr_file">Lyric_file:</label>
+		<input type="file" id="lyr_file" name="lyr_file"><br>
+		<input type="submit" value="Upload">		
+	</form>
+	
+</body>
+</html>
