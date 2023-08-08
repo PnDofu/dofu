@@ -1,0 +1,1 @@
+default_app_config='cd_test0.apps.CdTest0Config'

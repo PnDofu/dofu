@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+	<title>All Songs</title>
+	<style>
+		body {
+			background-image: url("{% static 'images/bai.jpg' %}");
+			background-position: center;
+			background-size: cover;
+		}
+	</style>
+</head>
+<body>
+	<h1>All Songs</h1>
+	<ul>
+		{% for song in songs %}
+			{% if forloop.first or song.song_name != songs.first.song_name %}
+				<li>{{ song.song_name }}</li>
+				<li>{{ song.release_date }}</li>
+				<button class="play-btn" data-audio="{{ song.audio_file.url }}">Play</button>
+			{% endif %}
+		{% endfor %}
+	</ul>
+	<script>
+		const playButtons=document.querySelectorAll('.play-btn');
+		playButtons.forEach(button => {
+			button.addEventListener('click',() => {
+				const audioUrl=button.dataset.audio;
+				playAudio(audioUrl);
+			});
+		});
+		function playAudio(url){
+			const audio=new Audio(url);
+			audio.play();
+		}
+	</script>
+</body>
+</html>

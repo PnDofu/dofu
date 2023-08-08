@@ -1,0 +1,184 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+		body{
+			margin:0;
+			padding: 0;
+			height: 100vh;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			background-image: url("{% static 'images/kid.jpg' %}");
+			background-size: cover;
+			background-repeat: no-repeat;
+			background-position: center;
+			background-attachment: fixed;
+			backdrop-filter: blur(5px);
+		}
+		#playButton:hover{
+			cursor: pointer;
+		}
+		@keyframes rotate {
+			from{
+				transform: rotate(0deg);
+			}
+			to{
+				transform: rotate(360deg);
+			}
+		}
+		#playButton.rotate {
+			animation: rotate 5s linear infinite;
+		}
+		.dropdown{
+			position: fixed;
+			top: 0;
+			left: 0;
+			display: inline-block;
+		}
+		.dropdown-content{
+			display: none;
+			position: absolute;
+			background-color: #f9f9f9;
+			min-width: 150px;
+			box-shadow: 0px 8px 16px 0px rgba(0,0,0,2);
+			z-index: 1;
+		}
+		.dropdown-content a {
+			color: black;
+			padding: 12px 16px;
+			text-decoration: none;
+			display: block;
+		}
+		.dropdown-content a:hover {
+			background-color: #f1f1f1;
+		}
+		.progress-bar-container{
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			width: 100%;
+			height: 30px;
+			overflow: hidden;
+		}
+		.progress-gif{
+			position: absolute;
+			height: 100%;
+		}
+		.dagou{
+			position: absolute;
+			height: 100%;
+		}
+
+	</style>
+</head>
+<body>
+	<div class='dropdown'>
+		<button onclick='toggleDropdown()'>Menu</button>
+		<div id='menu' class='dropdown-content'>
+			<a href="{% url 'dofu_1:song_list' %}" target="_blank">Song_list</a>
+			<a href="{% url 'dofu_1:upload_song' %}" target="_blank">Upload_song</a>
+		</div>
+	</div>
+	<div class="progress-bar-container">
+		<img class="progress-gif" src="{% static 'images/xiaogou_0.gif' %}">
+		<img class="dagou" src="{% static 'images/dagou_0.gif' %}" hidden>
+	</div>
+	
+	<img id='playButton' src="{% static 'images/cd_5.jpg' %}" alt="Play Button">
+	<audio id='music' controls style="display: none;">
+		{% for song in song_list %}
+			<source src="{{ song.cd_file.url }}" type="audio/mpeg">
+		{% endfor %}
+	</audio>
+	<script>
+		const albumCover = document.getElementById('playButton');
+        const audioPlayer = document.getElementById('music');
+        const audioNumber=document.getElementsByTagName('source')
+        let currentSong=0;
+        albumCover.addEventListener('click', () => {
+            if (audioPlayer.paused) {
+                audioPlayer.play();
+            } else {
+                audioPlayer.pause();
+            }
+        });
+
+        audioPlayer.addEventListener('play',()=>{
+        	albumCover.classList.add('rotate');
+        });
+        audioPlayer.addEventListener('pause',()=>{
+        	albumCover.classList.remove('rotate');
+        });
+        audioPlayer.addEventListener('ended',()=>{
+        	currentSong++;
+        	if(currentSong>=audioNumber.length){
+        		currentSong=0;
+        	}
+        	audioPlayer.src=audioNumber[currentSong].src;
+        	audioPlayer.play();
+        });
+        function toggleDropdown(){
+        	var dropdownMenu=document.getElementById('menu');
+        	if(dropdownMenu.style.display==="block"){
+        		dropdownMenu.style.display="none";
+        	}else{
+        		dropdownMenu.style.display="block";
+        	}
+        }
+        window.onclick=function(event) {
+        	if(!event.target.matches('.dropdown button')){
+        		var dropdownMenus=document.getElementsByClassName("dropdown-content");
+        		for(var i=0;i<dropdownMenus.length;i++){
+        			var openDropdownMenu=dropdownMenus[i];
+        			if(openDropdownMenu.style.display==="block"){
+        				openDropdownMenu.style.display="none";
+        			}
+        		}
+        	}
+        }
+        document.addEventListener("keydown",function(event){
+        	if(event.key === "ArrowLeft"){
+        		currentSong--;
+        		if(currentSong<=0){
+        			currentSong=0;
+        		}
+        		audioPlayer.src=audioNumber[currentSong].src;
+        		audioPlayer.play();
+        		console.log('change last song');
+        	}else if(event.key === "ArrowRight"){
+        		currentSong++;
+        		if(currentSong>=audioNumber.length){
+        			currentSong=0;
+        		}
+        		audioPlayer.src=audioNumber[currentSong].src;
+        		audioPlayer.play();
+        		console.log("change next song");
+        	}
+        	if(event.key === " "){
+        		if(audioPlayer.paused){
+        			audioPlayer.play();
+        		}else {
+        			audioPlayer.pause();
+        		}
+        	}
+        });
+        function updateProgressBar(){
+        	var gif=document.querySelector(".progress-gif");
+        	var dagou=document.querySelector(".dagou");
+        	var progress=(audioPlayer.currentTime / audioPlayer.duration)*100;
+        	gif.style.left=progress+"%";
+        	dagou.style.left=(progress-10)+"%";
+        	if(progress >= 10){
+        		dagou.removeAttribute("hidden");
+        	}else{
+        		dagou.setAttribute("hidden","hidden");
+        	}
+        }
+        audioPlayer.addEventListener("timeupdate",function(){
+        	updateProgressBar();
+        });
+	</script>
+</body>
+</html>

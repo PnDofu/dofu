@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<body>
+	<h1>Song List</h1>
+	<ul>
+		{% for song in songs %}
+			<li>
+				{{ song.name }}
+				<a href="{% url 'dofu_1:delete_song' song.id %}">Delete</a>
+			</li>
+		{% endfor %}
+	</ul>
+	 <a href="{% url 'dofu_1:upload_song' %}">Upload Song</a>
+</body>
+</html>

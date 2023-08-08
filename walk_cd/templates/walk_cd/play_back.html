@@ -1,0 +1,70 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+	<style>
+		body{
+			margin:0;
+			padding: 0;
+			height: 100vh;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		img{
+			max-width: 100%;
+			max-height: 100%;
+		}
+		#playButton:hover{
+			cursor: pointer;
+		}
+		@keyframes rotate {
+			from{
+				transform: rotate(0deg);
+			}
+			to{
+				transform: rotate(360deg);
+			}
+		}
+		#playButton.rotate {
+			animation: rotate 5s linear infinite;
+		}
+	</style>
+</head>
+<body>
+	<img id='playButton' src="{% static 'images/cd.jpg' %}" alt="Play Button">
+	<audio id='music' controls style="display: none;">
+		{% for song in song_list %}
+			<source src="{{ song.song_file.url }}" type="audio/mpeg">
+		{% endfor %}
+	</audio>
+	<script>
+		const albumCover = document.getElementById('playButton');
+        const audioPlayer = document.getElementById('music');
+        const audioNumber=document.getElementsByTagName('source')
+        let currentSong=0;
+        albumCover.addEventListener('click', () => {
+            if (audioPlayer.paused) {
+                audioPlayer.play();
+            } else {
+                audioPlayer.pause();
+            }
+        });
+
+        audioPlayer.addEventListener('play',()=>{
+        	albumCover.classList.add('rotate');
+        });
+        audioPlayer.addEventListener('pause',()=>{
+        	albumCover.classList.remove('rotate');
+        });
+        audioPlayer.addEventListener('ended',()=>{
+        	currentSong++;
+        	if(currentSong>=audioNumber.length){
+        		currentSong=0;
+        	}
+        	audioPlayer.src=audioNumber[currentSong].src;
+        	audioPlayer.play();
+        });
+	</script>
+</body>
+</html>

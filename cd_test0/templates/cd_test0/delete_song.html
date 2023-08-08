@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+<body>
+	<h1>Delete Song</h1>
+	<p>delete "{{ song.name }}"</p>
+	<form method="post">
+		{% csrf_token %}
+		<input type="submit" value="Delete">
+	</form>
+</body>
+</html>
